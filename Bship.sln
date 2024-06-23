@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Bship", "Bship.fsproj", "{A1C25B99-94E7-43DF-843B-36232CA822EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A1C25B99-94E7-43DF-843B-36232CA822EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1C25B99-94E7-43DF-843B-36232CA822EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1C25B99-94E7-43DF-843B-36232CA822EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1C25B99-94E7-43DF-843B-36232CA822EA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D306452C-9AC6-477D-BA92-E6F16278642F}
+	EndGlobalSection
+EndGlobal
