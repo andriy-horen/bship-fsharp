@@ -10,9 +10,9 @@ type Player =
     | P1
     | P2
 
-type PlayerMove = { player: Player; point: Point }
+type PlayerMove = { Player: Player; Point: Point }
 
-type GameResult = { winner: Player }
+type GameResult = { Winner: Player }
 
 type GameEvent =
     | GameStart

@@ -1,4 +1,4 @@
-module Bship
+module Bship.Program
 
 open System
 open Microsoft.AspNetCore.Builder
