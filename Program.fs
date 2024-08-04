@@ -25,5 +25,4 @@ let main _ =
         .ConfigureWebHostDefaults(configure >> ignore)
         .Build()
         .Run()
-
     0

@@ -14,6 +14,8 @@
 
   <ItemGroup>
     <Content Include="bship.http" />
+    <Compile Include="Models.fs" />
+    <Compile Include="Game.fs" />
   </ItemGroup>
 
 </Project>
