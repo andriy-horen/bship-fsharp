@@ -1,6 +1,5 @@
 module Bship.Program
 
-open System
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Hosting
@@ -25,4 +24,5 @@ let main _ =
         .ConfigureWebHostDefaults(configure >> ignore)
         .Build()
         .Run()
+      
     0

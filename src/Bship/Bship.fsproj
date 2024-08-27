@@ -1,20 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
-  
+
+  <ItemGroup>
+    <PackageReference Include="Giraffe" Version="6.4.0" />
+  </ItemGroup>
+
   <ItemGroup>
     <Content Include="bship.http" />
     <Compile Include="Models.fs" />
     <Compile Include="Game.fs" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <Compile Include="Program.fs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Giraffe" Version="6.4.0" />
   </ItemGroup>
 </Project>
