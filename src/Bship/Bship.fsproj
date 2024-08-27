@@ -4,7 +4,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Giraffe" Version="6.4.0" />
+    <PackageReference Include="Giraffe" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup>
