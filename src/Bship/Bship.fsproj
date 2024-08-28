@@ -11,6 +11,7 @@
     <Content Include="bship.http" />
     <Compile Include="Models.fs" />
     <Compile Include="Game.fs" />
+    <Compile Include="GameHub.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 </Project>

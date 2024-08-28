@@ -1,5 +1,6 @@
 module Bship.Program
 
+open Bship.GameHub
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Hosting
@@ -8,7 +9,11 @@ open Giraffe
 
 let webApp = choose [ route "/" >=> text "Hello F# Api" ]
 
-let configureApp (app: IApplicationBuilder) = app.UseGiraffe webApp
+let configureApp (app: IApplicationBuilder) =
+    app
+        .UseEndpoints(fun endpoints -> endpoints.MapHub<GameHub>("/game") |> ignore)
+        .UseGiraffe
+        webApp
 
 let configureServices (services: IServiceCollection) =
     services.AddSignalR() |> ignore
@@ -24,5 +29,5 @@ let main _ =
         .ConfigureWebHostDefaults(configure >> ignore)
         .Build()
         .Run()
-      
+
     0
