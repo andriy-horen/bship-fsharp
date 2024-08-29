@@ -35,13 +35,18 @@ type GameHub() as self =
 
     override this.OnDisconnectedAsync(ex) =
         let connectionId = this.Context.ConnectionId
-        waitingClients.TryRemove connectionId |> ignore
 
-        // TODO: client might not have been paired, so reading gameId will probably throw
-        let gameId = this.Context.Items["gameId"] :?> string
-        let success, (client1, client2) = games.TryGetValue gameId
-        if success then
-            client1.Abort()
-            client2.Abort()
+        if waitingClients.ContainsKey connectionId then
+            waitingClients.TryRemove connectionId |> ignore
+
+        let _, gameId = this.Context.Items.TryGetValue "gameId"
+        // if connection has a gameId then disconnect both clients
+        if gameId :? string then
+            let gameId = gameId :?> string
+            let success, (client1, client2) = games.TryGetValue gameId
+
+            if success then
+                client1.Abort()
+                client2.Abort()
 
         self.OnDisconnectedAsync(ex)
