@@ -2,6 +2,7 @@ module Bship.Program
 
 open System
 open Bship.GameHub
+open Microsoft.AspNetCore.Authentication.JwtBearer
 open Microsoft.AspNetCore.Builder
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.DependencyInjection
@@ -12,9 +13,18 @@ let main args =
 
     builder.Services.AddCors().AddLogging().AddSignalR() |> ignore
 
+    builder.Services
+        .AddAuthentication(fun options ->
+            options.DefaultAuthenticateScheme <- JwtBearerDefaults.AuthenticationScheme
+            options.DefaultChallengeScheme <- JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(fun options -> options.Authority <- "foobar")
+    |> ignore
+
     let app = builder.Build()
-    
+
     app.MapGet("/", Func<string>(fun () -> "Hello World!")) |> ignore
+
+    app.MapPost("/", Func<string>(fun () -> "Hello World!")) |> ignore
 
     app
         .UseCors(fun cors ->
@@ -25,7 +35,8 @@ let main args =
                 .AllowCredentials()
             |> ignore)
         .UseRouting()
-        .UseEndpoints(fun endpoints -> endpoints.MapHub<GameHub>("/game") |> ignore)
+        .UseAuthentication()
+        .UseEndpoints(fun api -> api.MapHub<GameHub>("/game") |> ignore)
     |> ignore
 
     app.Run()

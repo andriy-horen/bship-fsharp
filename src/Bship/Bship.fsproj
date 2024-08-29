@@ -1,6 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <UserSecretsId>9c99c6ab-30f7-4c8b-beff-9b262ff064ed</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,5 +10,9 @@
     <Compile Include="Game.fs" />
     <Compile Include="GameHub.fs" />
     <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
   </ItemGroup>
 </Project>
