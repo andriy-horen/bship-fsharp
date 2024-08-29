@@ -4,10 +4,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Giraffe" Version="7.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="bship.http" />
     <Compile Include="Models.fs" />
     <Compile Include="Game.fs" />

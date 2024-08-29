@@ -1,16 +1,21 @@
 module Bship.Program
 
+open System
 open Bship.GameHub
 open Microsoft.AspNetCore.Builder
-open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.DependencyInjection
-open Microsoft.Extensions.Logging
-open Giraffe
 
-let webApp = choose [ route "/" >=> text "Hello F# Api" ]
+[<EntryPoint>]
+let main args =
+    let builder = WebApplication.CreateBuilder(args)
 
-let configureApp (app: IApplicationBuilder) =
+    builder.Services.AddCors().AddLogging().AddSignalR() |> ignore
+
+    let app = builder.Build()
+    
+    app.MapGet("/", Func<string>(fun () -> "Hello World!")) |> ignore
+
     app
         .UseCors(fun cors ->
             cors
@@ -21,30 +26,7 @@ let configureApp (app: IApplicationBuilder) =
             |> ignore)
         .UseRouting()
         .UseEndpoints(fun endpoints -> endpoints.MapHub<GameHub>("/game") |> ignore)
-        .UseGiraffe
-        webApp
-
-let configureServices (services: IServiceCollection) =
-    services
-        .AddCors()
-        .AddLogging()
-        .AddGiraffe()
     |> ignore
 
-    services.AddSignalR() |> ignore
-
-let configure (webHostBuilder: IWebHostBuilder) =
-    webHostBuilder
-        .ConfigureLogging(fun logging -> logging.ClearProviders().AddConsole() |> ignore)
-        .Configure(configureApp)
-        .ConfigureServices(configureServices)
-
-[<EntryPoint>]
-let main _ =
-    Host
-        .CreateDefaultBuilder()
-        .ConfigureWebHostDefaults(configure >> ignore)
-        .Build()
-        .Run()
-
+    app.Run()
     0
