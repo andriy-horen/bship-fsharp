@@ -4,9 +4,9 @@ open System
 open System.IdentityModel.Tokens.Jwt
 open System.Security.Claims
 open System.Text
+open System.Threading.Tasks
 open Bship.GameHub
 open Microsoft.AspNetCore.Authentication.JwtBearer
-open Microsoft.AspNetCore.Authorization
 open Microsoft.AspNetCore.Builder
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.DependencyInjection
@@ -14,9 +14,8 @@ open Microsoft.IdentityModel.Tokens
 open Microsoft.Extensions.Configuration
 
 type User = { UserId: string; DisplayName: string }
-type CreateTokenResponse = { Token: string }
 
-type AuthorizationConfig = { JwtSecret: string }
+type GenerateTokenResponse = { Token: string }
 
 let tokenIssuer = "https://bship.org/auth"
 
@@ -25,19 +24,23 @@ let tokenAudience = "https://bship.org"
 [<EntryPoint>]
 let main args =
     let builder = WebApplication.CreateBuilder(args)
-    
+
     builder.Configuration.AddEnvironmentVariables("BSHIP_") |> ignore
 
     let jwtSecret =
         builder.Configuration.GetRequiredSection("BSHIP_JWT_SECRET").Get<string>()
-    
+
     let privateKey = SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
 
-    builder.Services.AddCors().AddLogging().AddSignalR() |> ignore
+    builder.Services.AddCors().AddLogging().AddAuthorization().AddSignalR()
+    |> ignore
 
     builder.Services
         .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(fun options ->
+            options.Authority <- tokenIssuer
+            options.Audience <- tokenAudience
+
             options.TokenValidationParameters <-
                 TokenValidationParameters(
                     ValidateIssuer = true,
@@ -47,16 +50,29 @@ let main args =
                     ValidIssuer = tokenIssuer,
                     ValidAudience = tokenAudience,
                     IssuerSigningKey = privateKey
+                )
+
+            options.Events <-
+                JwtBearerEvents(
+                    OnMessageReceived =
+                        (fun context ->
+                            let accessToken = context.Request.Query["access_token"]
+                            let path = context.HttpContext.Request.Path
+                            // TODO: path is quite generic could potentially match some other route
+                            if String.IsNullOrEmpty accessToken = false && path.StartsWithSegments("/game") then
+                                context.Token <- accessToken
+
+                            Task.CompletedTask)
                 ))
     |> ignore
 
     let app = builder.Build()
 
-    app.MapGet("/", Func<string>(fun () -> "Hello World!")).WithMetadata(AllowAnonymousAttribute()) |> ignore
+    app.MapGet("/", Func<string>(fun () -> "Hello World!")) |> ignore
     // TODO: implement rate limiter per IP-address
     app.MapPost(
         "/auth/token",
-        Func<CreateTokenResponse>(fun () ->
+        Func<GenerateTokenResponse>(fun () ->
             let privateKey = privateKey
             let credentials = SigningCredentials(privateKey, SecurityAlgorithms.HmacSha256)
 
@@ -84,14 +100,15 @@ let main args =
     app
         .UseCors(fun cors ->
             cors
-                .WithOrigins("http://localhost:8081")
+                .WithOrigins("http://localhost:8080")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials()
             |> ignore)
         .UseRouting()
         .UseAuthentication()
-        .UseEndpoints(fun api -> api.MapHub<GameHub>("/game") |> ignore)
+        .UseAuthorization()
+        .UseEndpoints(fun api -> api.MapHub<GameHub>("/game").RequireAuthorization() |> ignore)
     |> ignore
 
     app.Run()
