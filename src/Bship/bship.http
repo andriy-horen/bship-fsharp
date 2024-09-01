@@ -1,1 +1,5 @@
-GET https://localhost:7001/
+GET http://localhost:7000/
+
+###
+
+POST http://localhost:7000/auth/token
