@@ -32,7 +32,12 @@ let main args =
 
     let privateKey = SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
 
-    builder.Services.AddCors().AddLogging().AddAuthorization().AddSignalR()
+    builder.Services
+        .AddCors()
+        .AddLogging()
+        .AddAuthorization()
+        // TODO: Provide Keep-Alive interval from the configuration
+        .AddSignalR(fun options -> options.KeepAliveInterval <- TimeSpan.FromMilliseconds(5_000))
     |> ignore
 
     builder.Services

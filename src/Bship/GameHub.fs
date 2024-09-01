@@ -7,20 +7,17 @@ open System.Threading.Tasks
 open Microsoft.AspNetCore.SignalR
 open Microsoft.Extensions.Logging
 
-let getUserId (context: HubCallerContext) =
-    context.User.FindFirstValue(ClaimTypes.NameIdentifier)
-
 let addOrUpdateWaitingClient
     (logger: ILogger)
     (waitingClients: ConcurrentDictionary<string, HubCallerContext>)
     (context: HubCallerContext)
     =
-    let userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier)
+    let userId = context.UserIdentifier
     let inWaiting, existingContext = waitingClients.TryGetValue userId
 
     if inWaiting && existingContext.ConnectionId <> context.ConnectionId then
         logger.LogInformation(
-            "Closing existing connection for user {UserId}; connectionId: {ConnectionId}",
+            "Closing existing connection for user {UserId}; connectionId {ConnectionId}",
             userId,
             existingContext.ConnectionId
         )
@@ -28,7 +25,7 @@ let addOrUpdateWaitingClient
         existingContext.Abort()
 
     logger.LogInformation(
-        "Adding user {UserId} to the waiting list; connectionId: {ConnectionId}",
+        "Adding user {UserId} to the waiting list; connectionId {ConnectionId}",
         userId,
         context.ConnectionId
     )
@@ -42,20 +39,19 @@ let tryGetWaitingClient (logger: ILogger) (waitingClients: ConcurrentDictionary<
     client
     |> Option.bind (fun kv ->
         let removed, client = waitingClients.TryRemove kv.Key
-        let userId = getUserId client
 
         if removed then
             logger.LogInformation(
                 "Found waiting user {UserId}, removed for pairing; connectionId {ConnectionId}",
-                userId,
+                client.UserIdentifier,
                 client.ConnectionId
             )
 
             Some client
         else
             logger.LogWarning(
-                "Found waiting user {UserId}, failed to remove for pairing; connectionId: {ConnectionId}",
-                userId,
+                "Found waiting user {UserId}, failed to remove for pairing; connectionId {ConnectionId}",
+                client.UserIdentifier,
                 client.ConnectionId
             )
 
@@ -77,15 +73,13 @@ let tryPairClients
     (other: HubCallerContext)
     =
     let added = games.TryAdd(groupId.ToString(), (current, other))
-    let currentUserId = getUserId current
-    let otherUserId = getUserId other
 
     if added then
         logger.LogInformation(
             "Creating a group {GroupId} with two clients {User1}, {User2}",
             groupId,
-            currentUserId,
-            otherUserId
+            current.UserIdentifier,
+            other.UserIdentifier
         )
 
         Some(
@@ -141,4 +135,11 @@ type GameHub(logger: ILogger<GameHub>) =
         //         client1.Abort()
         //         client2.Abort()
         //
+
+        logger.LogInformation(
+            "User {UserId} disconnected; connectionId {ConnectionId}",
+            self.Context.UserIdentifier,
+            self.Context.ConnectionId
+        )
+
         base.OnDisconnectedAsync(ex)
