@@ -105,7 +105,7 @@ let main args =
     app
         .UseCors(fun cors ->
             cors
-                .WithOrigins("http://localhost:8080")
+                .WithOrigins([| 8080; 8081 |] |> Array.map (fun port -> $"http://localhost:{port}"))
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials()
