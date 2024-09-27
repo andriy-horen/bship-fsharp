@@ -182,16 +182,6 @@ type GameHub(logger: ILogger<GameHub>) =
                 addToWaiting waitingUsers this.Context
 
             return Task.FromResult
-
-        // let groupId = Guid.NewGuid().ToString()
-        // let pairingTask =
-        //     tryGetCurrentClient waitingClients this.Context
-        //     |> Option.bind (fun _ -> tryGetWaitingClient logger waitingClients)
-        //     |> Option.bind (tryPairClients logger this groupId games this.Context)
-        //
-        // match pairingTask with
-        // | Some pairClients -> do! pairClients
-        // | None -> addOrUpdateWaitingClient logger waitingClients this.Context
         }
 
     override this.OnDisconnectedAsync(ex) =
