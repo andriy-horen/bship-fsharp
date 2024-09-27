@@ -32,4 +32,8 @@ type GridSquare =
 
 type Grid = GridSquare[,]
 
+// event sourcing attempt
 
+type GameCommandAction =
+    | GameStart
+    | PlayerMove of PlayerMove

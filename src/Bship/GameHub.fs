@@ -13,14 +13,10 @@ let addOrUpdateWaitingClient
     (context: HubCallerContext)
     =
     let userId = context.UserIdentifier
-    let inWaiting, existingContext = waitingClients.TryGetValue userId
+    let isWaiting, existingContext = waitingClients.TryGetValue userId
 
-    if inWaiting && existingContext.ConnectionId <> context.ConnectionId then
-        logger.LogInformation(
-            "Closing existing connection for user {UserId}; connectionId {ConnectionId}",
-            userId,
-            existingContext.ConnectionId
-        )
+    if isWaiting && existingContext.ConnectionId <> context.ConnectionId then
+        logger.LogInformation(userId, existingContext.ConnectionId)
 
         existingContext.Abort()
 
@@ -95,51 +91,128 @@ let tryPairClients
         logger.LogError("Attempted to create a group {GroupId} but failed", groupId)
         None
 
+type DisconnectedUser = { DisconnectedAt: DateTimeOffset }
+
+type UserConnection =
+    | ConnectedUser of ConnectionContext: HubCallerContext
+    | DisconnectedUser of DisconnectedUser
+
+let addToWaiting (waitingUsers: ConcurrentDictionary<string, HubCallerContext>) (current: HubCallerContext) =
+    let userId = current.UserIdentifier
+
+    let wasAlreadyWaiting, old = waitingUsers.TryGetValue(userId)
+
+    let success =
+        if wasAlreadyWaiting then
+            waitingUsers.TryUpdate(userId, current, old)
+        else
+            waitingUsers.TryAdd(userId, current)
+
+    if not success then
+        // in this cast existing user either had got paired in the meantime or disconnected,
+        // the safest bet is to disconnect the current client and let it reconnect
+        current.Abort()
+
+    if success && wasAlreadyWaiting then
+        old.Abort()
+
+let reconnect
+    (userConnections: ConcurrentDictionary<string, UserConnection>)
+    (oldConnection: UserConnection)
+    (current: HubCallerContext)
+    =
+    let userId = current.UserIdentifier
+
+    match oldConnection with
+    | ConnectedUser old ->
+        // connection replacement
+        let updated =
+            userConnections.TryUpdate(userId, ConnectedUser current, oldConnection)
+
+        if updated then
+            // if successfully replaced then close the old one
+            old.Abort()
+        else
+            // in case we couldn't replace a connection just close the current one
+            current.Abort()
+
+    | DisconnectedUser _ ->
+        // reconnect
+        let updated =
+            userConnections.TryUpdate(userId, ConnectedUser current, oldConnection)
+
+        if not updated then
+            // in case we couldn't reconnect just close the current connection
+            current.Abort()
+
+let tryPair (waitingUsers: ConcurrentDictionary<string, HubCallerContext>) (current: HubCallerContext) =
+
+    let userId = current.UserIdentifier
+    let other = waitingUsers |> Seq.tryHead
+
+    match other with
+    | Some other when waitingUsers.ContainsKey userId = false && other.Key <> userId ->
+        // TODO: pair
+        true
+    | _ -> false
+
 type GameHub(logger: ILogger<GameHub>) =
     inherit Hub()
 
-    static let games =
-        ConcurrentDictionary<string, Tuple<HubCallerContext, HubCallerContext>>()
+    static let games = ConcurrentDictionary<string, Tuple<string, string>>()
 
-    static let waitingClients = ConcurrentDictionary<string, HubCallerContext>()
+    static let waitingUsers = ConcurrentDictionary<string, HubCallerContext>()
+
+    static let userConnections = ConcurrentDictionary<string, UserConnection>()
 
     override this.OnConnectedAsync() =
-        logger.LogDebug("New connection: {ConnectionId}", this.Context.ConnectionId)
+        logger.LogInformation(
+            "New connection: {ConnectionId} for a user {UserId}",
+            this.Context.ConnectionId,
+            this.Context.UserIdentifier
+        )
 
         task {
-            let groupId = Guid.NewGuid().ToString()
+            let userId = this.Context.UserIdentifier
+            let wasAlreadyConnected, oldConnection = userConnections.TryGetValue userId
 
-            let pairingTask =
-                tryGetCurrentClient waitingClients this.Context
-                |> Option.bind (fun _ -> tryGetWaitingClient logger waitingClients)
-                |> Option.bind (tryPairClients logger this groupId games this.Context)
+            if wasAlreadyConnected then
+                reconnect userConnections oldConnection this.Context
+            elif not (tryPair waitingUsers this.Context) then
+                addToWaiting waitingUsers this.Context
 
-            match pairingTask with
-            | Some pairClients -> do! pairClients
-            | None -> addOrUpdateWaitingClient logger waitingClients this.Context
+            return Task.FromResult
+
+        // let groupId = Guid.NewGuid().ToString()
+        // let pairingTask =
+        //     tryGetCurrentClient waitingClients this.Context
+        //     |> Option.bind (fun _ -> tryGetWaitingClient logger waitingClients)
+        //     |> Option.bind (tryPairClients logger this groupId games this.Context)
+        //
+        // match pairingTask with
+        // | Some pairClients -> do! pairClients
+        // | None -> addOrUpdateWaitingClient logger waitingClients this.Context
         }
 
-    override self.OnDisconnectedAsync(ex) =
-        // let connectionId = self.Context.ConnectionId
-        //
-        // if waitingClients.ContainsKey connectionId then
-        //     waitingClients.TryRemove connectionId |> ignore
-        //
-        // let _, gameId = self.Context.Items.TryGetValue groupIdKey
-        // // if connection has a gameId then disconnect both clients
-        // if gameId :? string then
-        //     let gameId = gameId :?> string
-        //     let success, (client1, client2) = games.TryGetValue gameId
-        //
-        //     if success then
-        //         client1.Abort()
-        //         client2.Abort()
-        //
+    override this.OnDisconnectedAsync(ex) =
+        // TODO: inject actual time provider
+        let timeProvider = TimeProvider.System
+
+        let userId = this.Context.ConnectionId
+
+        let disconnectedUser =
+            DisconnectedUser { DisconnectedAt = timeProvider.GetUtcNow() }
+
+        let _, currentUser = userConnections.TryGetValue(userId)
+        userConnections.TryUpdate(userId, disconnectedUser, currentUser) |> ignore
+
+        // removes client if already waiting
+        waitingUsers.TryRemove(userId) |> ignore
 
         logger.LogInformation(
             "User {UserId} disconnected; connectionId {ConnectionId}",
-            self.Context.UserIdentifier,
-            self.Context.ConnectionId
+            userId,
+            this.Context.ConnectionId
         )
 
         base.OnDisconnectedAsync(ex)
