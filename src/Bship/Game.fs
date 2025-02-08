@@ -38,6 +38,9 @@ let getGrid gameState player =
     fleetToGrid fleet
 
 let markKilled (grid: Grid) fleet =
+    // arrays are mutable in F#, so we need to copy it to avoid side effects
+    let grid = Array2D.copy grid
+
     fleet
     |> List.map toPoints
     |> List.iter (fun points ->
@@ -48,6 +51,7 @@ let markKilled (grid: Grid) fleet =
 
     grid
 
+// TODO: this function is impure, it should be refactored
 let reduceState gameState =
     let moves = getAllMoves gameState.events
     let grid1 = getGrid gameState Player.P1
