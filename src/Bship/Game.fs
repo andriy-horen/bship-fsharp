@@ -21,8 +21,7 @@ let fleetToGrid fleet =
     let grid = emptyGrid 10 10
 
     fleet
-    |> List.map toPoints
-    |> List.collect id
+    |> List.collect toPoints
     |> List.iter (fun (x, y) -> grid[x, y] <- GridSquare.Ship)
 
     grid
@@ -41,14 +40,12 @@ let getGrid gameState player =
 let markKilled (grid: Grid) fleet =
     fleet
     |> List.map toPoints
-    |> List.map (fun points ->
+    |> List.iter (fun points ->
         let allHit = points |> List.forall (fun (x, y) -> grid[x, y] = GridSquare.Hit)
 
-        match allHit with
-        | true -> points |> List.iter (fun (x, y) -> grid[x, y] <- GridSquare.Kill)
-        | false -> ())
-    |> ignore
-    
+        if allHit then
+            points |> List.iter (fun (x, y) -> grid[x, y] <- GridSquare.Kill))
+
     grid
 
 let reduceState gameState =

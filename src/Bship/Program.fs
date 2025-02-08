@@ -74,7 +74,7 @@ let main args =
     let app = builder.Build()
 
     app.MapGet("/", Func<string>(fun () -> "Hello World!")) |> ignore
-    // TODO: implement rate limiter per IP-address
+    // TODO: implement rate limiter
     app.MapPost(
         "/auth/token",
         Func<GenerateTokenResponse>(fun () ->
@@ -86,7 +86,7 @@ let main args =
                     Subject =
                         ClaimsIdentity(
                             [ Claim(JwtRegisteredClaimNames.Sub, Guid.NewGuid().ToString())
-                              Claim(JwtRegisteredClaimNames.Name, "john_doe") ]
+                              Claim(JwtRegisteredClaimNames.Name, "player") ]
                         ),
                     Issuer = tokenIssuer,
                     Audience = tokenAudience,
