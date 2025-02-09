@@ -6,10 +6,12 @@ open System.Security.Claims
 open System.Text
 open System.Threading.Tasks
 open Bship.GameHub
+open Bship.GameMatchingService
 open Microsoft.AspNetCore.Authentication.JwtBearer
 open Microsoft.AspNetCore.Builder
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
 open Microsoft.IdentityModel.Tokens
 open Microsoft.Extensions.Configuration
 
@@ -41,6 +43,7 @@ let main args =
     |> ignore
 
     builder.Services
+        .AddHostedService<GameMatchingService>()
         .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(fun options ->
             options.Authority <- tokenIssuer

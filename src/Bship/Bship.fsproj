@@ -8,7 +8,9 @@
     <Content Include="bship.http" />
     <Compile Include="Models.fs" />
     <Compile Include="Game.fs" />
+    <Compile Include="GameService.fs" />
     <Compile Include="GameHub.fs" />
+    <Compile Include="GameMatchingService.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
