@@ -25,11 +25,12 @@ type GameMatchingService(hubContext: IHubContext<GameHub>, logger: ILogger<GameM
                 let! _ = timer.WaitForNextTickAsync(ct)
 
                 if DateTimeOffset.UtcNow - this.lastTick >= cleanupInterval then
-                    logger.LogInformation("Deleting old games")
+                    // logger.LogInformation("Deleting old games")
                     this.lastTick <- DateTimeOffset.UtcNow
 
                 try
-                    logger.LogInformation("Checking for waiting users")
+                    // logger.LogInformation("Checking for waiting users")
+                    ()
                 with ex ->
                     logger.LogError(ex, "Error checking for waiting users")
         }
