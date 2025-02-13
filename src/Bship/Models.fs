@@ -2,7 +2,7 @@ module Bship.Models
 
 type Point = int * int
 
-type Ship = Point * Point
+type Ship = Point list
 
 type Fleet = Ship list
 
