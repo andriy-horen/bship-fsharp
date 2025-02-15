@@ -1,30 +1,34 @@
-import { Ship } from '@bship/lib/models';
-import { range } from '@bship/lib/utils';
+import { Point, Ship } from '@bship/lib/models';
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 
-const battleship = css`
-  display: flex;
-  margin-bottom: -1px;
-  margin-right: -1px;
-`;
+const size = 25;
 
-const battleshipSection = css`
-  background-color: #afb1c1;
-  height: 25px;
-  width: 25px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
+const BattleshipSection = styled.div<Point>(({ x, y }) => {
+  return {
+    backgroundColor: '#afb1c1',
+    height: size,
+    width: size,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    transform: `translate(${size * x}px, ${size * y}px)`,
+  };
+});
 
-const peg = css`
-  content: '';
-  width: 10px;
-  height: 10px;
-  /* background-color: #b3b4c1; */
-  background-color: #87899b;
-  border-radius: 50%;
-`;
+const styles = {
+  container: css`
+    display: flex;
+  `,
+  peg: css`
+    content: '';
+    width: 10px;
+    height: 10px;
+    /* background-color: #b3b4c1; */
+    background-color: #87899b;
+    border-radius: 50%;
+  `,
+};
 
 export type BattleshipProps = {
   ship: Ship;
@@ -33,11 +37,11 @@ export type BattleshipProps = {
 
 export function Battleship({ ship, onClick }: BattleshipProps) {
   return (
-    <div css={battleship} onClick={() => onClick?.(ship)}>
-      {[...range(ship.length - 1)].map((index) => (
-        <div key={index} css={battleshipSection}>
-          <div css={peg}></div>
-        </div>
+    <div css={styles.container} onClick={() => onClick?.(ship)}>
+      {ship.map((p, index) => (
+        <BattleshipSection key={index} x={p.x - index} y={p.y}>
+          <div css={styles.peg}></div>
+        </BattleshipSection>
       ))}
     </div>
   );
