@@ -1,12 +1,21 @@
 import { AppNavbar } from '@bship/components/app-navbar';
+import { Battleship } from '@bship/components/battleship';
 import Box from '@mui/material/Box';
 import React from 'react';
 
 export const LandingPage: React.FC = () => {
   return (
     <>
-      <Box>
-        <AppNavbar />
+      <AppNavbar />
+      <Box sx={{ p: 2, marginTop: 8 }}>
+        <Battleship
+          ship={[
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 2, y: 0 },
+            { x: 3, y: 0 },
+          ]}
+        />
       </Box>
     </>
   );

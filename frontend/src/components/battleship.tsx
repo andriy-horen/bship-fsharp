@@ -1,7 +1,6 @@
 import { Ship } from '@bship/lib/models';
 import { range } from '@bship/lib/utils';
 import { css } from '@emotion/react';
-import './Battleship.css';
 
 const battleship = css`
   display: flex;
@@ -9,10 +8,22 @@ const battleship = css`
   margin-right: -1px;
 `;
 
+const battleshipSection = css`
+  background-color: #afb1c1;
+  height: 25px;
+  width: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 const peg = css`
-  width: 100%;
-  height: 100%;
-  background-color: #333;
+  content: '';
+  width: 10px;
+  height: 10px;
+  /* background-color: #b3b4c1; */
+  background-color: #87899b;
+  border-radius: 50%;
 `;
 
 export type BattleshipProps = {
@@ -22,25 +33,9 @@ export type BattleshipProps = {
 
 export function Battleship({ ship, onClick }: BattleshipProps) {
   return (
-    <div
-      css={battleship}
-      // className={classNames({
-      //   battleship: true,
-      //   vertical: model.orientation === 'v',
-      //   horizontal: model.orientation === 'h',
-      // })}
-      onClick={() => onClick?.(ship)}
-    >
-      {[...range(ship.length)].map((index) => (
-        <div
-          key={index}
-          // className={classNames({
-          //   'battleship-section': true,
-          //   head: index === 0,
-          //   tail: index === model.size - 1,
-          //   hit: model.hitSections?.includes(index),
-          // })}
-        >
+    <div css={battleship} onClick={() => onClick?.(ship)}>
+      {[...range(ship.length - 1)].map((index) => (
+        <div key={index} css={battleshipSection}>
           <div css={peg}></div>
         </div>
       ))}
