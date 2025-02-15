@@ -1,0 +1,79 @@
+.battleship {
+  display: flex;
+  --battleship-size: 25px;
+  margin-bottom: -1px;
+  margin-right: -1px;
+}
+
+.battleship.vertical {
+  flex-direction: column;
+}
+
+.battleship-section {
+  /* background-color: #cacbd8; */
+  background-color: #afb1c1;
+  height: var(--battleship-size);
+  width: var(--battleship-size);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.battleship-section > .peg {
+  content: '';
+  width: 10px;
+  height: 10px;
+  /* background-color: #b3b4c1; */
+  background-color: #87899b;
+  border-radius: 50%;
+}
+
+.battleship-section.hit {
+  background-color: #ffaeae;
+}
+
+.battleship-section.hit > .peg {
+  background: transparent;
+  display: flex;
+  height: 14px;
+  width: 14px;
+  margin-left: 2px;
+}
+
+.battleship-section.hit > .peg::before,
+.battleship-section.hit > .peg::after {
+  content: '';
+  width: 4px;
+  background: #ff4b4b;
+  position: relative;
+}
+
+.battleship-section.hit > .peg::before {
+  transform: rotate(-45deg);
+  left: 4px;
+}
+
+.battleship-section.hit > .peg::after {
+  transform: rotate(45deg);
+  left: 0px;
+}
+
+.battleship.horizontal .battleship-section.head {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.battleship.horizontal .battleship-section.tail {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.battleship.vertical .battleship-section.head {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.battleship.vertical .battleship-section.tail {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
