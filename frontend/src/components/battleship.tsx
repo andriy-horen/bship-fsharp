@@ -2,16 +2,10 @@ import { Point, Ship } from '@bship/lib/models';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
-const size = 25;
+const size = 20;
 
 const BattleshipSection = styled.div<Point>(({ x, y }) => {
   return {
-    backgroundColor: '#afb1c1',
-    height: size,
-    width: size,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
     transform: `translate(${size * x}px, ${size * y}px)`,
   };
 });
@@ -19,11 +13,20 @@ const BattleshipSection = styled.div<Point>(({ x, y }) => {
 const styles = {
   container: css`
     display: flex;
+
+    > div {
+      background-color: #afb1c1;
+      height: ${size}px;
+      width: ${size}px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   `,
   peg: css`
     content: '';
-    width: 10px;
-    height: 10px;
+    width: ${size / 2.5}px;
+    height: ${size / 2.5}px;
     /* background-color: #b3b4c1; */
     background-color: #87899b;
     border-radius: 50%;
