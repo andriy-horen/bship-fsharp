@@ -1,3 +1,3 @@
 export const GameTheme = {
-  squareSize: 20,
+  squareSize: 25,
 };

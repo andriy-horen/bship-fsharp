@@ -14,13 +14,13 @@ export const LandingPage: React.FC = () => {
           ['water', 'water', 'ship-all-placed', 'water', 'water', 'water', 'water', 'water', 'water', 'water'],
           ['water', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water'],
           ['water', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water'],
-          ['water', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water'],
+          ['water', 'water', 'water', 'water', 'water', 'water-hit', 'water', 'water', 'water', 'water'],
           ['water', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water'],
           ['water', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water'],
           ['water', 'ship-top-placed', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water'],
+          ['water', 'ship-none-hit', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water'],
           ['water', 'ship-none-placed', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water'],
-          ['water', 'ship-none-placed', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water'],
-          ['water', 'ship-bottom-placed', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water'],
+          ['water', 'ship-bottom-placed', 'water', 'water', 'water', 'water', 'water-miss', 'water-miss', 'water-miss', 'water-miss'],
         ]} onClick={() => {}} />
 
         <Battleship ship={[['ship'], ['ship'], ['ship'], ['ship']]} />

@@ -6,40 +6,6 @@ import { Fragment } from 'react';
 
 const size = GameTheme.squareSize;
 
-const EmptyPart = styled.div`
-  width: ${size}px;
-  height: ${size}px;
-`;
-
-const ShipPart = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: ${size}px;
-  height: ${size}px;
-  background-color: #afb1c1;
-`;
-
-const styles = {
-  container: css`
-    display: flex;
-    flex-direction: column;
-
-    > div {
-      display: flex;
-      flex-direction: row;
-    }
-  `,
-  peg: css`
-    content: '';
-    width: ${size / 2.5}px;
-    height: ${size / 2.5}px;
-    /* background-color: #b3b4c1; */
-    background-color: #87899b;
-    border-radius: 50%;
-  `,
-};
-
 const getShipPart = (part: ShipPartType) => {
   switch (part) {
     case 'empty':
@@ -71,3 +37,36 @@ export function Battleship({ ship, onClick }: BattleshipProps) {
     </div>
   );
 }
+
+const EmptyPart = styled.div`
+  width: ${size}px;
+  height: ${size}px;
+`;
+
+const ShipPart = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: ${size}px;
+  height: ${size}px;
+  background-color: #afb1c1;
+`;
+
+const styles = {
+  container: css`
+    display: flex;
+    flex-direction: column;
+
+    > div {
+      display: flex;
+      flex-direction: row;
+    }
+  `,
+  peg: css`
+    width: ${size / 2.5}px;
+    height: ${size / 2.5}px;
+    /* background-color: #b3b4c1; */
+    background-color: #87899b;
+    border-radius: 50%;
+  `,
+};
