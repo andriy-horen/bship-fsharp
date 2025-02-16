@@ -23,13 +23,8 @@ export const LandingPage: React.FC = () => {
           ['water', 'ship-bottom-placed', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water'],
         ]} onClick={() => {}} />
 
-        <Battleship
-          ship={[
-            ['ship', 'empty', 'empty', 'ship', 'empty'],
-            ['ship', 'ship', 'ship', 'ship', 'ship'],
-            ['ship', 'empty', 'empty', 'ship', 'empty'],
-          ]}
-        />
+        <Battleship ship={[['ship'], ['ship'], ['ship'], ['ship']]} />
+        <Battleship ship={[['ship', 'ship', 'ship', 'ship']]} />
       </Box>
     </>
   );
