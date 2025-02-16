@@ -1,5 +1,6 @@
 import { GameTheme } from '@bship/lib/theme';
 import styled from '@emotion/styled';
+import { MouseEventHandler } from 'react';
 
 const size = GameTheme.squareSize;
 
@@ -23,19 +24,19 @@ export type WaterSquare = 'water' | 'water-hit' | 'water-miss';
 
 export type Square = ShipSquare | WaterSquare;
 
-const getGridSquare = (square: Square) => {
+const getGridSquare = (square: Square, clickHandler: MouseEventHandler<HTMLElement>) => {
   switch (square) {
     case 'water':
-      return <WaterSquare />;
+      return <WaterSquare onClick={clickHandler} />;
     case 'water-hit':
       return (
-        <WaterSquare>
+        <WaterSquare onClick={clickHandler}>
           <HitMark />
         </WaterSquare>
       );
     case 'water-miss':
       return (
-        <WaterSquare>
+        <WaterSquare onClick={clickHandler}>
           <MissMark />
         </WaterSquare>
       );
@@ -50,7 +51,7 @@ const getGridSquare = (square: Square) => {
     case 'ship-all-placed':
     case 'ship-none-placed':
       return (
-        <ShipSquare>
+        <ShipSquare onClick={clickHandler}>
           <Peg />
         </ShipSquare>
       );
@@ -65,18 +66,18 @@ const getGridSquare = (square: Square) => {
     case 'ship-all-hit':
     case 'ship-none-hit':
       return (
-        <HitShipSquare>
+        <HitShipSquare onClick={clickHandler}>
           <HitPeg />
         </HitShipSquare>
       );
     default:
-      return <WaterSquare />;
+      return <WaterSquare onClick={clickHandler} />;
   }
 };
 
 export type GameGridProps = {
   grid: Square[][];
-  onClick: (row: number, col: number) => void;
+  onClick?: (row: number, col: number) => void;
 };
 
 export const GameGrid: React.FC<GameGridProps> = ({ grid, onClick }) => {
@@ -84,11 +85,9 @@ export const GameGrid: React.FC<GameGridProps> = ({ grid, onClick }) => {
     <GameGridContainer>
       {grid.map((row, rowIndex) => (
         <GridRow key={rowIndex}>
-          {row.map((square, colIndex) => (
-            <div key={colIndex} onClick={() => onClick(rowIndex, colIndex)}>
-              {getGridSquare(square)}
-            </div>
-          ))}
+          {row.map((square, colIndex) =>
+            getGridSquare(square, () => onClick?.(rowIndex, colIndex)),
+          )}
         </GridRow>
       ))}
     </GameGridContainer>

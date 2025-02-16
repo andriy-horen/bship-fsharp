@@ -4,7 +4,7 @@ import { getEmptyImage } from 'react-dnd-html5-backend';
 import { ItemTypes } from '../dnd/itemTypes';
 import { Battleship, BattleshipProps } from './battleship';
 
-export function DraggableBattleship({ model, onClick }: BattleshipProps) {
+function DraggableBattleship({ model, onClick }: BattleshipProps) {
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
       type: ItemTypes.Battleship,
