@@ -1,6 +1,3 @@
-export type Point = {
-  x: number;
-  y: number;
-};
+export type ShipPart = 'empty' | 'ship';
 
-export type Ship = Point[];
+export type Ship = ShipPart[][];

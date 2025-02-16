@@ -1,27 +1,33 @@
-import { Point, Ship } from '@bship/lib/models';
+import { Ship, ShipPart as ShipPartType } from '@bship/lib/models';
 import { GameTheme } from '@bship/lib/theme';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { Fragment } from 'react';
 
 const size = GameTheme.squareSize;
 
-const BattleshipSection = styled.div<Point>(({ x, y }) => {
-  return {
-    transform: `translate(${size * x}px, ${size * y}px)`,
-  };
-});
+const EmptyPart = styled.div`
+  width: ${size}px;
+  height: ${size}px;
+`;
+
+const ShipPart = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: ${size}px;
+  height: ${size}px;
+  background-color: #afb1c1;
+`;
 
 const styles = {
   container: css`
     display: flex;
+    flex-direction: column;
 
     > div {
-      background-color: #afb1c1;
-      height: ${size}px;
-      width: ${size}px;
       display: flex;
-      justify-content: center;
-      align-items: center;
+      flex-direction: row;
     }
   `,
   peg: css`
@@ -34,6 +40,19 @@ const styles = {
   `,
 };
 
+const getShipPart = (part: ShipPartType) => {
+  switch (part) {
+    case 'empty':
+      return <EmptyPart />;
+    case 'ship':
+      return (
+        <ShipPart>
+          <div css={styles.peg}></div>
+        </ShipPart>
+      );
+  }
+};
+
 export type BattleshipProps = {
   ship: Ship;
   onClick?: (ship: Ship) => void;
@@ -42,10 +61,12 @@ export type BattleshipProps = {
 export function Battleship({ ship, onClick }: BattleshipProps) {
   return (
     <div css={styles.container} onClick={() => onClick?.(ship)}>
-      {ship.map((p, index) => (
-        <BattleshipSection key={index} x={p.x - index} y={p.y}>
-          <div css={styles.peg}></div>
-        </BattleshipSection>
+      {ship.map((row, i) => (
+        <div key={i}>
+          {row.map((part, j) => (
+            <Fragment key={j}>{getShipPart(part)}</Fragment>
+          ))}
+        </div>
       ))}
     </div>
   );
