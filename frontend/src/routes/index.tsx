@@ -2,7 +2,6 @@ import { AppNavbar } from '@bship/components/app-navbar';
 import { Battleship } from '@bship/components/battleship';
 import { FleetEditor } from '@bship/components/fleet-editor';
 import { GameGrid } from '@bship/components/grid';
-import { defaultFleet } from '@bship/lib/models';
 import Box from '@mui/material/Box';
 import React from 'react';
 
@@ -24,7 +23,7 @@ export const LandingPage: React.FC = () => {
           ['water', 'ship-none-placed', 'water', 'water', 'water', 'water', 'water', 'water', 'water', 'water'],
           ['water', 'ship-bottom-placed', 'water', 'water', 'water', 'water', 'water-miss', 'water-miss', 'water-miss', 'water-miss'],
         ]} onClick={() => {}} />
-        <FleetEditor fleet={defaultFleet} />
+        <FleetEditor />
 
         <Battleship ship={[['ship'], ['ship'], ['ship'], ['ship']]} />
         <Battleship ship={[['ship', 'ship', 'ship', 'ship']]} />

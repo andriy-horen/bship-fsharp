@@ -14,3 +14,8 @@ export const defaultFleet: Ship[] = [
   [['ship']],
   [['ship']],
 ];
+
+export type Point = {
+  x: number;
+  y: number;
+};
