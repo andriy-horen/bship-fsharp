@@ -1,8 +1,9 @@
 import { Point, Ship } from '@bship/lib/models';
+import { GameTheme } from '@bship/lib/theme';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
-const size = 20;
+const size = GameTheme.squareSize;
 
 const BattleshipSection = styled.div<Point>(({ x, y }) => {
   return {
