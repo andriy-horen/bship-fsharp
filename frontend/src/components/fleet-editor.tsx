@@ -104,6 +104,7 @@ const Position = styled.div`
   cursor: move;
   display: inline-block;
   position: absolute;
+  touch-action: none;
 `;
 
 const Editor = styled.div`
