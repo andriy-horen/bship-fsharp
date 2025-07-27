@@ -1,7 +1,9 @@
 import { Point, Ship } from '@bship/lib/models';
+import { shuffleShips } from '@bship/lib/utils/shuffleShips';
 import { DndContext, DragEndEvent, Modifier, useDraggable } from '@dnd-kit/core';
 import { restrictToParentElement } from '@dnd-kit/modifiers';
 import styled from '@emotion/styled';
+import { Button } from '@mui/material';
 import { PropsWithChildren, useState } from 'react';
 import { Battleship } from './battleship';
 
@@ -24,7 +26,15 @@ export type DraggableShip = {
 
 export const FleetEditor: React.FC = () => {
   const [fleet, setFleet] = useState<DraggableShip[]>([
-    { ship: [['ship'], ['ship'], ['ship'], ['ship']], position: { x: 0, y: 0 } },
+    {
+      ship: [
+        ['ship', 'ship', 'ship'],
+        ['empty', 'ship', 'empty'],
+        ['ship', 'ship', 'ship'],
+        ['empty', 'ship', 'empty'],
+      ],
+      position: { x: 0, y: 0 },
+    },
     { ship: [['ship'], ['ship'], ['ship']], position: { x: 0, y: 0 } },
     { ship: [['ship'], ['ship'], ['ship']], position: { x: 0, y: 0 } },
     { ship: [['ship'], ['ship']], position: { x: 0, y: 0 } },
@@ -62,15 +72,31 @@ export const FleetEditor: React.FC = () => {
   };
 
   return (
-    <DndContext onDragEnd={handleDragEnd} modifiers={[snapToGrid, restrictToParentElement]}>
-      <Editor>
-        {fleet.map(({ ship, position }, index) => (
-          <DraggableItem key={index} id={index.toString()} position={position}>
-            <Battleship ship={ship} />
-          </DraggableItem>
-        ))}
-      </Editor>
-    </DndContext>
+    <>
+      <DndContext onDragEnd={handleDragEnd} modifiers={[snapToGrid, restrictToParentElement]}>
+        <Editor>
+          {fleet.map(({ ship, position }, index) => (
+            <DraggableItem key={index} id={index.toString()} position={position}>
+              <Battleship ship={ship} />
+            </DraggableItem>
+          ))}
+        </Editor>
+      </DndContext>
+      <Button
+        variant="contained"
+        onClick={() =>
+          setFleet((fleet) => {
+            const shuffled = shuffleShips(
+              fleet.map((item) => item.ship),
+              { gridCols: 10, gridRows: 10, cellSize: 25, allowTouch: false, maxRetries: 10 },
+            );
+            return shuffled;
+          })
+        }
+      >
+        Shuffle Fleet
+      </Button>
+    </>
   );
 };
 
@@ -109,7 +135,7 @@ const Position = styled.div`
 
 const Editor = styled.div`
   position: relative;
-  width: 500px;
-  height: 500px;
+  width: 250px;
+  height: 250px;
   outline: 1px solid black;
 `;
